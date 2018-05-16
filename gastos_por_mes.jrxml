@@ -3,7 +3,13 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<queryString language="SQL">
+	<parameter name="DATA_INI" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("01/08/2012")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FIM" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("31/08/2012")]]></defaultValueExpression>
+	</parameter>
+	<queryString>
 		<![CDATA[SELECT
      categorias.`nome` AS categoriaNome,
      contas.`titular` AS contaTitular,
@@ -17,6 +23,8 @@ FROM
      INNER JOIN `contas` contas ON movimentacoes.`conta_id` = contas.`id`
 WHERE
      tipoMovimentacao LIKE 'SAIDA'
+	AND
+     data BETWEEN $P{DATA_INI} AND $P{DATA_FIM}
 ORDER BY
      contas.`titular` ASC,
      movimentacoes.`data` ASC]]>
@@ -43,13 +51,33 @@ ORDER BY
 	<group name="contaTitular">
 		<groupExpression><![CDATA[$F{contaTitular}]]></groupExpression>
 		<groupHeader>
-			<band height="50"/>
+			<band height="20">
+				<rectangle>
+					<reportElement uuid="c3e029fc-9e1e-4d34-9d6a-7e2d67db016e" x="0" y="0" width="572" height="20" backcolor="#CCCCCC"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="90c86e2e-bf23-42b8-b5d3-7ad049b4f583" x="0" y="0" width="572" height="20" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["CONTA DE "+$F{contaTitular}.toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="50">
-				<textField>
-					<reportElement uuid="1b9076da-d9f1-4658-9b12-d19414ea1d05" x="405" y="0" width="100" height="20"/>
-					<textElement/>
+			<band height="31">
+				<rectangle>
+					<reportElement uuid="9acea02d-7416-4608-be29-535d98f28793" x="0" y="0" width="572" height="31" backcolor="#CCCCCC"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="¤ #,##0.00">
+					<reportElement uuid="1b9076da-d9f1-4658-9b12-d19414ea1d05" x="324" y="7" width="81" height="20"/>
+					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$V{valor_3}]]></textFieldExpression>
 				</textField>
 			</band>
@@ -58,10 +86,16 @@ ORDER BY
 	<group name="por_mes">
 		<groupExpression><![CDATA[$F{data}.getMonth()]]></groupExpression>
 		<groupFooter>
-			<band height="50">
-				<textField>
-					<reportElement uuid="d4d3eb20-52a8-4ed7-8359-3912d2ecda30" x="406" y="20" width="100" height="20"/>
-					<textElement/>
+			<band height="31">
+				<rectangle>
+					<reportElement uuid="9acea02d-7416-4608-be29-535d98f28793" x="0" y="0" width="572" height="31" backcolor="#CCCCCC"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="¤ #,##0.00">
+					<reportElement uuid="d4d3eb20-52a8-4ed7-8359-3912d2ecda30" x="325" y="4" width="81" height="20"/>
+					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$V{valor_4}]]></textFieldExpression>
 				</textField>
 			</band>
@@ -71,9 +105,15 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="23" splitType="Stretch">
+		<band height="34" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="9acea02d-7416-4608-be29-535d98f28793" x="0" y="0" width="572" height="34" backcolor="#CCCCCC"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
 			<staticText>
-				<reportElement uuid="8080336e-e659-4777-9fac-d06af10785eb" x="222" y="0" width="149" height="20"/>
+				<reportElement uuid="8080336e-e659-4777-9fac-d06af10785eb" x="212" y="7" width="149" height="20"/>
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
@@ -88,52 +128,45 @@ ORDER BY
 		<band height="22" splitType="Stretch">
 			<staticText>
 				<reportElement uuid="d0a1a114-0d9c-420b-97ff-0f56bec4c4da" x="0" y="0" width="81" height="20"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[categoriaNome]]></text>
+				<text><![CDATA[CATEGORIA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fcb11e20-75b3-4a56-9f85-e13cbbd08d58" x="81" y="0" width="81" height="20"/>
-				<textElement>
+				<reportElement uuid="4c60352a-b628-4c2d-8ad3-e3b4504b3dec" x="81" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[contaTitular]]></text>
+				<text><![CDATA[DATA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4c60352a-b628-4c2d-8ad3-e3b4504b3dec" x="162" y="0" width="81" height="20"/>
-				<textElement>
+				<reportElement uuid="629c7106-99f7-4d5c-af8f-a10e4d12e842" x="162" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[data]]></text>
+				<text><![CDATA[DESCRICAO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="629c7106-99f7-4d5c-af8f-a10e4d12e842" x="243" y="0" width="81" height="20"/>
-				<textElement>
+				<reportElement uuid="9f4e235e-ed4a-49e5-9780-63e2940d5652" x="243" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[descricao]]></text>
+				<text><![CDATA[TIPO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="9f4e235e-ed4a-49e5-9780-63e2940d5652" x="324" y="0" width="81" height="20"/>
-				<textElement>
+				<reportElement uuid="d527ba0c-77f3-4c98-875d-30ae6648020a" x="324" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[tipo]]></text>
+				<text><![CDATA[VALOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d527ba0c-77f3-4c98-875d-30ae6648020a" x="405" y="0" width="81" height="20"/>
-				<textElement>
+				<reportElement uuid="6f6ac5a1-a673-4d19-bed6-a236bf0c4096" x="405" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[valor]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="6f6ac5a1-a673-4d19-bed6-a236bf0c4096" x="486" y="0" width="81" height="20"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[id]]></text>
+				<text><![CDATA[ID]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -141,37 +174,32 @@ ORDER BY
 		<band height="21" splitType="Stretch">
 			<textField>
 				<reportElement uuid="da5571aa-2d45-4e59-94de-1ce45ec836ab" x="0" y="0" width="81" height="20"/>
-				<textElement/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{categoriaNome}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement uuid="90c86e2e-bf23-42b8-b5d3-7ad049b4f583" x="81" y="0" width="81" height="20"/>
-				<textElement/>
-				<textFieldExpression><![CDATA[$F{contaTitular}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="b7dc1c44-a5cf-43bb-9105-28bff1b14b1d" x="162" y="0" width="81" height="20"/>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="b7dc1c44-a5cf-43bb-9105-28bff1b14b1d" x="82" y="0" width="81" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement uuid="0700eb61-b011-45a0-a96f-1543a92c315b" x="243" y="0" width="81" height="20"/>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="0700eb61-b011-45a0-a96f-1543a92c315b" x="163" y="0" width="81" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="e64647d9-aaa4-47e8-a52b-8982027a1605" x="324" y="0" width="81" height="20"/>
-				<textElement/>
-				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+				<reportElement uuid="e64647d9-aaa4-47e8-a52b-8982027a1605" x="244" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{tipo}.substring( 0, 1 )]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement uuid="322e6496-ba21-4641-b08e-d77715a46049" x="405" y="0" width="81" height="20"/>
-				<textElement/>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="322e6496-ba21-4641-b08e-d77715a46049" x="325" y="0" width="81" height="20"/>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="c197a9bb-da9a-42f3-acf9-057161783926" x="486" y="0" width="81" height="20"/>
-				<textElement/>
+				<reportElement uuid="c197a9bb-da9a-42f3-acf9-057161783926" x="406" y="0" width="81" height="20"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -181,7 +209,7 @@ ORDER BY
 			<textField>
 				<reportElement uuid="5e90dfd9-8d49-46d8-bb07-76b2677d7350" x="444" y="0" width="80" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement uuid="e43ca071-a84e-4f2f-9e6a-4fa58079f707" x="525" y="0" width="40" height="20"/>
@@ -196,12 +224,6 @@ ORDER BY
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="21" splitType="Stretch">
-			<textField>
-				<reportElement uuid="b010a376-c06f-454a-b8cd-78d666154a7d" x="405" y="0" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression><![CDATA[$V{valor_2}]]></textFieldExpression>
-			</textField>
-		</band>
+		<band height="21" splitType="Stretch"/>
 	</summary>
 </jasperReport>
