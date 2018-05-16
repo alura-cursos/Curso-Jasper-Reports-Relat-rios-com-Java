@@ -79,7 +79,7 @@
 				<reportElement uuid="f67abb8c-508c-494b-b80c-b257217972f5" positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1"/>
 			</line>
 			<textField isStretchWithOverflow="true">
-				<reportElement uuid="f4e0b0e6-17d4-4cbd-9a67-3c03f7a35b38" x="0" y="0" width="111" height="20"/>
+				<reportElement uuid="f4e0b0e6-17d4-4cbd-9a67-3c03f7a35b38" x="1" y="0" width="111" height="20"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
