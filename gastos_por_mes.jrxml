@@ -3,11 +3,34 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<subDataset name="charDataSet" uuid="51579abf-9c66-4b36-909d-c2a6447d7d8d">
+		<queryString language="SQL">
+			<![CDATA[SELECT
+     contas.`titular` AS titular,
+     categorias.`nome` AS categoria,
+     sum(movimentacoes.`valor`) AS soma
+FROM
+     `contas` contas INNER JOIN `movimentacoes` movimentacoes ON contas.`id` = movimentacoes.`conta_id`
+     INNER JOIN `categorias` categorias ON movimentacoes.`categoria_id` = categorias.`id`
+WHERE
+     movimentacoes.`tipoMovimentacao` LIKE 'SAIDA'
+GROUP BY
+     titular,
+     categoria]]>
+		</queryString>
+		<field name="titular" class="java.lang.String"/>
+		<field name="categoria" class="java.lang.String"/>
+		<field name="soma" class="java.math.BigDecimal"/>
+	</subDataset>
 	<parameter name="DATA_INI" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("01/08/2012")]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("01/06/2012")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DATA_FIM" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("31/08/2012")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/Users/gordo/Desktop/StepsAlura/jasper/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -105,7 +128,7 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="34" splitType="Stretch">
+		<band height="135" splitType="Stretch">
 			<rectangle>
 				<reportElement uuid="9acea02d-7416-4608-be29-535d98f28793" x="0" y="0" width="572" height="34" backcolor="#CCCCCC"/>
 				<graphicElement>
@@ -119,6 +142,14 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Gastos por Conta]]></text>
 			</staticText>
+			<subreport>
+				<reportElement uuid="683c65d4-e73d-4311-8bea-c51ecb525868" x="0" y="34" width="572" height="75"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "gastos_por_mes_subreport1.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement uuid="cad21b3f-fe40-4ac6-8592-aa95601d74d6" x="0" y="119" width="100" height="1"/>
+			</break>
 		</band>
 	</title>
 	<pageHeader>
@@ -221,9 +252,150 @@ ORDER BY
 				<textElement/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<break>
+				<reportElement uuid="40c78f08-c040-4081-b686-9331fc3bb1c4" x="0" y="19" width="100" height="1"/>
+			</break>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="21" splitType="Stretch"/>
+		<band height="284" splitType="Stretch">
+			<stackedBarChart>
+				<chart>
+					<reportElement uuid="ef050f42-95cf-47cd-8d1d-6f91a97e2787" x="0" y="10" width="572" height="174"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="charDataSet" uuid="f8a51d44-b582-4528-bb87-c1490e58deb6"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{categoria}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{titular}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{soma}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+				</barPlot>
+			</stackedBarChart>
+			<break>
+				<reportElement uuid="d3d0259d-4f55-445c-ac55-35b9fd3bd869" x="0" y="190" width="100" height="1"/>
+			</break>
+			<crosstab>
+				<reportElement uuid="3dd2b207-b162-4a39-ad68-9f1b7e23ce4f" x="0" y="191" width="572" height="93"/>
+				<rowGroup name="contaTitular" width="70" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{contaTitular}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F5F5DC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="80b27ea2-b3fc-4445-b6ac-65143755750c" style="Crosstab Data Text" x="0" y="0" width="70" height="25"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$V{contaTitular}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#FFFFBF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="689124aa-53ff-40c5-8419-ffc5e17a9b32" x="0" y="0" width="70" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total contaTitular]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="data" height="30" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[(new SimpleDateFormat("yyyy-MM")).format($F{data})]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F5F5DC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="2f909aab-19a8-4c53-98b4-61fef2015fb0" style="Crosstab Data Text" x="0" y="0" width="50" height="30"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$V{data}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#FFFFBF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="12bca92b-99a6-40d5-97d1-74668993b107" x="0" y="0" width="50" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total data]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="valorMeasure" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{valor}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="086755b5-6fa4-49b7-9a7f-d3ad8956a3d4" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{valorMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="contaTitular">
+					<cellContents backcolor="#FFFFBF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="a41247bb-bcef-4baf-9866-691221430739" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{valorMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="data">
+					<cellContents backcolor="#FFFFBF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="c9341998-464b-4836-874d-9099f9284e1a" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{valorMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="contaTitular" columnTotalGroup="data">
+					<cellContents backcolor="#FFFFBF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="ea707018-2287-48a0-86f1-faf71831643d" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{valorMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
 	</summary>
 </jasperReport>
